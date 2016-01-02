@@ -1,13 +1,22 @@
-AWS.config.update({accessKeyId:'AKIAJDENJUFL3SRUUBRA', secretAccessKey:'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'}); 
-AWS.config.region = 'ap-southeast-1';
-AWS.config.endpoint = 'dynamodb.ap-southeast-1.amazonaws.com';
-AWS.config.apiVersions = {
-  dynamodb: '2012-08-10'
-};
 var utilityParams = {
 	reservedKeys : ['name','names','value','values','url','location'],
 	keywordsSplitRe : /[. ]/
+
 };
+
+var credentials = {
+	accessKeyId : '',
+	secretAccessKey : ''
+};
+
+	
+AWS.config.update({accessKeyId:credentials.accessKeyId, secretAccessKey:credentials.secretAccessKey}); 
+AWS.config.region = 'ap-southeast-1';
+AWS.config.endpoint = 'dynamodb.ap-southeast-1.amazonaws.com';
+AWS.config.apiVersions = {
+	dynamodb: '2012-08-10'
+};
+
 
 
 var dynamodb =  new AWS.DynamoDB();
@@ -28,29 +37,20 @@ String.prototype.reverse = function(){
 };
 
 function logData(err, data){
+	d = [];
 	if(err){
 		console.log("Error is : " + JSON.stringify(err, null, 2));
 	}
 	else{
 		data.Items.forEach(function(item){
-            console.log(item);
+			d.push(item); 
         })
 	}
-};
-
-
-function getDataSimply(tablename){
-    var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
-    var params = {
-        TableName : tablename
-    };
-    dynamodbDoc.scan(params, logData);
-    
+	return d;
 };
 
 
 function BuildBaseQuery(TableName,retrievalValues){
-    //var start = new Date().getMilliseconds();
     var params = {
         TableName : TableName,
         ProjectionExpression:'',
@@ -64,17 +64,15 @@ function BuildBaseQuery(TableName,retrievalValues){
     		params.ExpressionAttributeNames["#" + i.reverse()] = i;
     	}
     	else{
-    		params.ProjectionExpression +=i+",";
+    		params.ProjectionExpression += i+",";
     	}
     });
     params.ProjectionExpression = params.ProjectionExpression.slice(0,params.ProjectionExpression.length-1);
-    //var end = new Date().getMilliseconds();
     return params;
 };
 
 function keywordScan(TableName, retrievalValues, conditions, limit){
-	var start = new Date().getMilliseconds();
-		var params = BuildBaseQuery(TableName, retrievalValues); // Building the Base Query
+		var params = BuildBaseQuery(TableName, retrievalValues);
 		if(conditions.length > 0){
 			conditions.forEach(function(condition){
 				conHash = ':' + condition[2].split(utilityParams.keywordsSplitRe).join('');
@@ -106,12 +104,6 @@ function keywordScan(TableName, retrievalValues, conditions, limit){
 			delete parms.ExpressionAttributeNames;
 		}
 		params.FilterExpression = params.FilterExpression.slice(0,params.FilterExpression.length-4);
-		var end = new Date().getMilliseconds();
-	    console.log(end - start);
-	    co(params);
-	    limit !== 'undefined'?params.Limit = limit:delete params.Limit;
+	    limit !== 'undefined'?params.Limit = limit:params.Limit = 100;
 	    dynamodb.scan(params, logData);
-	
-	
-    
 };
