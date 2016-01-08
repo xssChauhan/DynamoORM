@@ -5,8 +5,8 @@ var utilityParams = {
 };
 
 var credentials = {
-	accessKeyId : 'AKIAJ3N6FB2UZM6O6COA',
-	secretAccessKey : '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'
+	accessKeyId : '',
+	secretAccessKey : ''
 };
 
 	
