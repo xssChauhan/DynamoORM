@@ -5,8 +5,8 @@ var utilityParams = {
 };
 
 var credentials = {
-	accessKeyId : '',
-	secretAccessKey : ''
+	accessKeyId : 'AKIAJ3N6FB2UZM6O6COA',
+	secretAccessKey : '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'
 };
 
 	
@@ -46,8 +46,16 @@ function logData(err, data){
 			d.push(item); 
         })
 	}
-	return d;
+	co(d);
 };
+
+function getDataSimply(TableName){
+	var params = {
+		TableName :  TableName,
+		Limit : 100
+	};
+	dynamodb.scan(params, logData);
+}
 
 
 function BuildBaseQuery(TableName,retrievalValues){
