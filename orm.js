@@ -1,5 +1,7 @@
+//requirejs(['schema.js']);
+
 var utilityParams = {
-	reservedKeys : ['name','names','value','values','url','location'],
+	reservedKeys : ['name','names','value','values','url','location','value','values'],
 	keywordsSplitRe : /[. ]/
 
 };
